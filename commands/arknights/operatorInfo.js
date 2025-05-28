@@ -11,17 +11,30 @@ module.exports = {
                 .setName('name')
                 .setDescription('Input an operator\'s name')
                 .setRequired(true)
-                .setAutocomplete(false)
+                .setAutocomplete(true)
         ),
-    // async autocomplete(interaction) { // list builder for autocompletion
-    //     const value = interaction.options.getFocused().toLowerCase();
-    //     console.log(value);
-    //     const resp2 = await axios.get(`${paths.apiUrl}/operator/match/t?limit=6`);
-    //     console.log(resp2)
-    // },
+    async autocomplete(interaction) { // list builder for autocompletion
+        const userInputValue = interaction.options.getFocused().toLowerCase();
+        
+        
+        if (userInputValue.length >= 2) {
+            console.log(`User's input : ${userInputValue}`);
+            const matchedOperators = await axios.get(`${paths.apiUrl}/operator/match/${userInputValue}?limit=6`);
+            let responseMap = []; 
+
+            matchedOperators.data.forEach(opData => {
+                responseMap.push({"id": opData.value.id, "name":opData.value.data.name})
+            });
+
+            await interaction.respond(
+                responseMap.map(op => ({ name: op.name, value: op.id })),
+            );
+        }     
+    },
     async execute(interaction) {
         const client = interaction.client.user;
         const operatorInput = interaction.options.getString('name').toLowerCase() ?? 'amiya';
+        console.log(operatorInput)
 
         await interaction.deferReply();
 

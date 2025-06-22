@@ -7,7 +7,7 @@ module.exports = [
 			ecmaVersion: 'latest',
 		},
 		rules: {
-            'arrow-spacing': ['warn', { before: true, after: true }],
+			'arrow-spacing': ['warn', { before: true, after: true }],
 			'brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
 			'comma-dangle': ['error', 'always-multiline'],
 			'comma-spacing': 'error',
@@ -15,7 +15,7 @@ module.exports = [
 			curly: ['error', 'multi-line', 'consistent'],
 			'dot-location': ['error', 'property'],
 			'handle-callback-err': 'off',
-			indent: ['error', 'tab'],
+			indent: ['error', 'tab', { 'SwitchCase': 1 }],
 			'keyword-spacing': 'error',
 			'max-nested-callbacks': ['error', { max: 4 }],
 			'max-statements-per-line': ['error', { max: 2 }],

@@ -186,8 +186,8 @@ module.exports = {
 								.setCustomId(`skin_open:${operator.id}`),
 							new ButtonBuilder()
 								.setStyle(ButtonStyle.Secondary)
-								.setLabel("Skills")
-								.setEmoji({ name: "📖" })
+								.setLabel('Skills')
+								.setEmoji({ name: '📖' })
 								.setCustomId(`skill_open:${operator.id}`),
 							new ButtonBuilder()
 								.setStyle(ButtonStyle.Link)

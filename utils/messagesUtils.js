@@ -3,10 +3,10 @@ const RANGE_CELLS = ['⬛', '🔳', '🟦'];
 export function buildRangeString(range) {
 	const cols = range.grids.map(s => s.col);
 	const rows = range.grids.map(s => s.row);
-	const left   = Math.min(0, ...cols);
-	const right  = Math.max(0, ...cols);
+	const left = Math.min(0, ...cols);
+	const right = Math.max(0, ...cols);
 	const bottom = Math.min(0, ...rows);
-	const top    = Math.max(0, ...rows);
+	const top = Math.max(0, ...rows);
 
 	const arrCols = right - left + 1;
 	const arrRows = top - bottom + 1;
@@ -17,8 +17,8 @@ export function buildRangeString(range) {
 	}
 	rangeArr[-left][-bottom] = 2;
 
-	return Array.from({ length: arrRows }, (_, i) =>
-		Array.from({ length: arrCols }, (_, j) => RANGE_CELLS[rangeArr[j][i]]).join('')
+	return Array.from({ length: arrRows }, (_row, i) =>
+		Array.from({ length: arrCols }, (_col, j) => RANGE_CELLS[rangeArr[j][i]]).join(''),
 	).join('\n') + '\n';
 }
 
@@ -29,7 +29,7 @@ export function stripHTMLTags(str) {
 export function resolveBlackboard(description, blackboard) {
 	const values = Object.fromEntries(blackboard.map(({ key, value }) => [key, value]));
 
-	return description.replace(/\{([^}:]+)(?::([^}]*))?\}/g, (_, key, format) => {
+	return description.replace(/\{([^}:]+)(?::([^}]*))?\}/g, (_match, key, format) => {
 		const value = values[key];
 		if (value === undefined) return `{${key}}`;
 		if (!format) return String(value);

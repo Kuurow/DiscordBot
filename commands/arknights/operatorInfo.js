@@ -15,7 +15,7 @@ const {
 } = require('discord.js');
 const axios = require('axios');
 const { paths, gameConsts } = require('../../constants.json');
-const { buildRangeString, stripHTMLTags, buildOperatorProfession } = require('../../utils/messagesUtils');
+const { buildRangeString, stripHTMLTags, buildOperatorProfession, resolveBlackboard } = require('../../utils/messagesUtils');
 
 
 module.exports = {
@@ -30,21 +30,25 @@ module.exports = {
 				.setAutocomplete(true),
 		),
 	async autocomplete(interaction) {
-		// list builder for autocompletion
 		const userInputValue = interaction.options.getFocused().toLowerCase();
 
-		if (userInputValue.length >= 2) {
-			// console.log(`User's input : ${userInputValue}`);
+		if (userInputValue.length < 2) {
+			await interaction.respond([]);
+			return;
+		}
+
+		try {
 			const matchedOperators = await axios.get(
 				`${paths.apiUrl}/operator/match/${userInputValue}?limit=6`,
 			);
-			const responseMap = [];
 
-			matchedOperators.data.forEach((opData) => {
-				responseMap.push({ id: opData.value.id, name: opData.value.data.name });
-			});
-
-			await interaction.respond(responseMap.map((op) => ({ name: op.name, value: op.id })));
+			await interaction.respond(
+				matchedOperators.data.map(({ value }) => ({ name: value.data.name, value: value.id })),
+			);
+		}
+		catch (error) {
+			console.error('[autocomplete error]', error);
+			await interaction.respond([]);
 		}
 	},
 	async execute(interaction) {
@@ -54,6 +58,45 @@ module.exports = {
 		try {
 			const response = await axios.get(`${paths.apiUrl}/operator/${operatorInput}`);
 			const operator = response.data.value;
+
+			// Max stats (last phase, last keyframe)
+			const maxPhase = operator.data.phases[operator.data.phases.length - 1];
+			const maxStats = maxPhase.attributesKeyFrames[maxPhase.attributesKeyFrames.length - 1].data;
+			const statsText = [
+				`❤️ **HP:** ${maxStats.maxHp}  ⚔️ **ATK:** ${maxStats.atk}  🛡️ **DEF:** ${maxStats.def}  ✨ **RES:** ${maxStats.magicResistance}`,
+				`💠 **DP Cost:** ${maxStats.cost}  ✋ **Block:** ${maxStats.blockCnt}`,
+			].join('\n');
+
+			// Talents (highest unlock candidate per talent slot)
+			const SP_CHARGE_TYPE = {
+				SP_INCREASE_WHEN_ATTACK: 'On Attack',
+				SP_INCREASE_WITH_TIME: 'Over Time',
+				SP_INCREASE_WHEN_TAKEN_DAMAGE: 'On Hit',
+			};
+			const SKILL_ACTIVATION = {
+				SKILL_USAGE_0: 'Passive',
+				SKILL_USAGE_1: 'Manual',
+				SKILL_USAGE_2: 'Auto',
+				SKILL_USAGE_4: 'Auto',
+			};
+
+			const talentsText = operator.data.talents.map((talent) => {
+				const top = talent.candidates[talent.candidates.length - 1];
+				return `**${top.name}**\n${stripHTMLTags(top.description)}`;
+			}).join('\n\n');
+
+			// Skills at max level
+			const skillsText = operator.skills.map((skill) => {
+				const levels = skill.excel.levels;
+				const max = levels[levels.length - 1];
+				const activation = SKILL_ACTIVATION[max.skillType] ?? 'Manual';
+				const charge = SP_CHARGE_TYPE[max.spData.spType] ?? '';
+				const duration = max.duration > 0 ? ` · ${max.duration}s` : '';
+				const spInfo = activation !== 'Passive'
+					? ` — ${activation} · ${charge} · SP: ${max.spData.spCost}${duration}`
+					: '';
+				return `**${max.name}**${spInfo}\n${stripHTMLTags(resolveBlackboard(max.description, max.blackboard))}`;
+			}).join('\n\n');
 
 			const components = [
 				new ContainerBuilder()
@@ -73,7 +116,7 @@ module.exports = {
 									`**${buildOperatorProfession(gameConsts.professions[operator.data.profession])} - ${operator.archetype}\n ${'★'.repeat(gameConsts.rarity[operator.data.rarity] + 1)}**`,
 								),
 								new TextDisplayBuilder().setContent(
-									`${stripHTMLTags(operator.data.description)}`,
+									stripHTMLTags(operator.data.description),
 								),
 							),
 					)
@@ -82,10 +125,32 @@ module.exports = {
 							'**Range**\n' + buildRangeString(operator.range),
 						),
 					)
+					.addSeparatorComponents(
+						new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true),
+					)
 					.addTextDisplayComponents(
-						new TextDisplayBuilder().setContent(
-							'**Appearance**',
-						),
+						new TextDisplayBuilder().setContent('**Max Stats (E2)**'),
+						new TextDisplayBuilder().setContent(statsText),
+					)
+					.addSeparatorComponents(
+						new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true),
+					)
+					.addTextDisplayComponents(
+						new TextDisplayBuilder().setContent('**Talents**'),
+						new TextDisplayBuilder().setContent(talentsText),
+					)
+					.addSeparatorComponents(
+						new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true),
+					)
+					.addTextDisplayComponents(
+						new TextDisplayBuilder().setContent('**Skills**'),
+						new TextDisplayBuilder().setContent(skillsText),
+					)
+					.addSeparatorComponents(
+						new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large).setDivider(true),
+					)
+					.addTextDisplayComponents(
+						new TextDisplayBuilder().setContent('**Appearance**'),
 					)
 					.addMediaGalleryComponents(
 						new MediaGalleryBuilder().addItems(
@@ -115,26 +180,26 @@ module.exports = {
 					.addActionRowComponents(
 						new ActionRowBuilder().addComponents(
 							new ButtonBuilder()
-								.setStyle(ButtonStyle.Link)
-								.setLabel('Arknights Website')
-								.setEmoji({
-									name: '👀',
-								})
-								.setURL('https://www.arknights.global/'),
+								.setStyle(ButtonStyle.Secondary)
+								.setLabel('Skins')
+								.setEmoji({ name: '🎨' })
+								.setCustomId(`skin_open:${operator.id}`),
+							new ButtonBuilder()
+								.setStyle(ButtonStyle.Secondary)
+								.setLabel("Skills")
+								.setEmoji({ name: "📖" })
+								.setCustomId(`skill_open:${operator.id}`),
 							new ButtonBuilder()
 								.setStyle(ButtonStyle.Link)
 								.setLabel('More')
-								.setEmoji({
-									name: 'TerraIcon',
-									id: '1386336969436434444',
-								})
+								.setEmoji({ name: 'TerraIcon', id: '1386336969436434444' })
 								.setURL(`https://arknights.wiki.gg/wiki/${operator.data.name.replace(/\s+/g, '_')}`),
 						),
 					),
 			];
 
 			await interaction.editReply({
-				components: components,
+				components,
 				flags: MessageFlags.IsComponentsV2,
 			});
 		}

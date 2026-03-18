@@ -9,16 +9,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.8.4",
+    "axios": "^1.13.6",
     "discord.js": "^14.25.1",
-    "dotenv": "^17.0.0",
-    "undici": "^7.21.0"
+    "dotenv": "^17.3.1",
+    "undici": "^7.24.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "eslint": "^10.0.0"
   },
   "overrides": {
-    "undici": "^7.21.0"
+    "undici": "^7.24.4"
   }
 }

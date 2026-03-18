@@ -23,7 +23,12 @@ export function buildRangeString(range) {
 }
 
 export function stripHTMLTags(str) {
-	return str.replace(/<[^>]*>/g, '');
+    let prev;
+    do {
+        prev = str;
+        str = str.replace(/<[^>]*>/g, '');
+    } while (str !== prev);
+    return str;
 }
 
 export function resolveBlackboard(description, blackboard) {
@@ -45,13 +50,21 @@ export function resolveBlackboard(description, blackboard) {
 }
 
 export function htmlToMarkdown(str) {
-	return str
-		.replace(/<br\s*\/?>/gi, '\n')
-		.replace(/<strong>|<b>/gi, '**')
-		.replace(/<\/strong>|<\/b>/gi, '**')
-		.replace(/<em>|<i>/gi, '*')
-		.replace(/<\/em>|<\/i>/gi, '*')
-		.replace(/<[^>]*>/g, '');
+    let result = str
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<strong>|<b>/gi, '**')
+        .replace(/<\/strong>|<\/b>/gi, '**')
+        .replace(/<em>|<i>/gi, '*')
+        .replace(/<\/em>|<\/i>/gi, '*');
+
+    // Loop until no more tags remain
+    let prev;
+    do {
+        prev = result;
+        result = result.replace(/<[^>]*>/g, '');
+    } while (result !== prev);
+
+    return result;
 }
 
 const PROFESSION_ICONS = {

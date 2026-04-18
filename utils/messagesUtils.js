@@ -1,6 +1,6 @@
 const RANGE_CELLS = ['⬛', '🔳', '🟦'];
 
-export function buildRangeString(range) {
+function buildRangeString(range) {
 	const cols = range.grids.map(s => s.col);
 	const rows = range.grids.map(s => s.row);
 	const left = Math.min(0, ...cols);
@@ -22,7 +22,7 @@ export function buildRangeString(range) {
 	).join('\n') + '\n';
 }
 
-export function stripHTMLTags(str) {
+function stripHTMLTags(str) {
     let prev;
     do {
         prev = str;
@@ -31,7 +31,7 @@ export function stripHTMLTags(str) {
     return str;
 }
 
-export function resolveBlackboard(description, blackboard) {
+function resolveBlackboard(description, blackboard) {
 	const values = Object.fromEntries(blackboard.map(({ key, value }) => [key, value]));
 
 	return description.replace(/\{([^}:]+)(?::([^}]*))?\}/g, (_match, key, format) => {
@@ -49,7 +49,7 @@ export function resolveBlackboard(description, blackboard) {
 	});
 }
 
-export function htmlToMarkdown(str) {
+function htmlToMarkdown(str) {
     let result = str
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<strong>|<b>/gi, '**')
@@ -78,6 +78,8 @@ const PROFESSION_ICONS = {
 	Vanguard:   '<:Vanguard:1386355533061034044>',
 };
 
-export function buildOperatorProfession(opProfession) {
+function buildOperatorProfession(opProfession) {
 	return `${PROFESSION_ICONS[opProfession] ?? ''}${opProfession}`;
 }
+
+module.exports = { buildRangeString, stripHTMLTags, resolveBlackboard, htmlToMarkdown, buildOperatorProfession };

@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
-const { handleSkinOpen, handleSkinNav } = require('../handlers/skinViewer');
-const { handleSkillOpen, handleSkillNav } = require('../handlers/skillViewer');
+const { handleTabSelect, handleSkillLevelSelect, handleOutfitSelect, handleModuleSelect } = require('../handlers/tabViewer');
+const { handleRecruitClass, handleRecruitTrait } = require('../commands/arknights/recruitSim');
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -45,17 +45,33 @@ module.exports = {
 		}
 		else if (interaction.isButton()) {
 			try {
-				if (interaction.customId.startsWith('skin_open:')) {
-					await handleSkinOpen(interaction);
+				if (interaction.customId === 'viewer_close') {
+					await interaction.message.delete();
 				}
-				else if (interaction.customId.startsWith('skin_nav:')) {
-					await handleSkinNav(interaction);
+			}
+			catch (error) {
+				console.error(error);
+			}
+		}
+		else if (interaction.isStringSelectMenu()) {
+			try {
+				if (interaction.customId.startsWith('op_tab:')) {
+					await handleTabSelect(interaction);
 				}
-				else if (interaction.customId.startsWith('skill_open:')) {
-					await handleSkillOpen(interaction);
+				else if (interaction.customId.startsWith('skill_level:')) {
+					await handleSkillLevelSelect(interaction);
 				}
-				else if (interaction.customId.startsWith('skill_nav:')) {
-					await handleSkillNav(interaction);
+				else if (interaction.customId.startsWith('outfit_select:')) {
+					await handleOutfitSelect(interaction);
+				}
+				else if (interaction.customId.startsWith('module_select:')) {
+					await handleModuleSelect(interaction);
+				}
+				else if (interaction.customId.startsWith('recruit_class:')) {
+					await handleRecruitClass(interaction);
+				}
+				else if (interaction.customId.startsWith('recruit_trait:')) {
+					await handleRecruitTrait(interaction);
 				}
 			}
 			catch (error) {

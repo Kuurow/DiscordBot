@@ -1,0 +1,17 @@
+meta {
+  name: Get Enemy
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/enemy/enemy_1007_shdbrd
+  body: none
+  auth: none
+}
+
+docs {
+  Returns enemy data including stats, immune flags, and description.
+  Not yet implemented in the bot — endpoint available for future /enemy command.
+  Replace the hardcoded enemy ID in the URL to look up different enemies.
+}

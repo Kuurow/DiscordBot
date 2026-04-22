@@ -1,0 +1,18 @@
+meta {
+  name: Module Icon
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{assetUrl}}/operator/modules/uniequip_002_amiya.png
+  body: none
+  auth: none
+}
+
+docs {
+  Module icon image. Path segment is value.modules[i].info.uniEquipId from the operator document.
+  uniEquipId format: uniequip_NNN_operatorname (e.g. uniequip_002_amiya).
+  Replace the hardcoded ID in the URL to test different modules.
+  Displayed in the Modules tab of the /op command.
+}

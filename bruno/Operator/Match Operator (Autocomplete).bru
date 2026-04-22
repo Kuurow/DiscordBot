@@ -1,0 +1,22 @@
+meta {
+  name: Match Operator (Autocomplete)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/operator/match/ami
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 6
+}
+
+docs {
+  Substring search across operator names. Used for autocomplete (min 2 chars in practice).
+  Returns an array of matching operator documents (same shape as GET /operator/:id).
+  Query params: limit (default unbounded), include/exclude for field projection.
+  Used in operatorTab.js autocomplete handler.
+}

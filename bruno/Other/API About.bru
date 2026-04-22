@@ -1,0 +1,17 @@
+meta {
+  name: API About
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/about
+  body: none
+  auth: none
+}
+
+docs {
+  Returns HellaAPI metadata: version, last updated timestamp, and available endpoints.
+  Useful for checking if the API has been updated with new game data.
+  No parameters needed.
+}

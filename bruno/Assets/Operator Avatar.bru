@@ -1,0 +1,18 @@
+meta {
+  name: Operator Avatar
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{assetUrl}}/operator/avatars/{{operatorId}}.png
+  body: none
+  auth: none
+}
+
+docs {
+  Small operator avatar image (used in Discord embeds and application emojis).
+  Path segment is value.skins[0].avatarId from the operator document.
+  avatarId usually matches the operatorId but may differ for skins — always read from the API.
+  Uploaded as application emojis via /setup-emojis (see commands/utility/setupEmojis.js).
+}

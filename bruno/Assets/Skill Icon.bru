@@ -1,0 +1,35 @@
+meta {
+  name: Skill Icon
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{assetUrl}}/operator/skills/skill_icon_{{skillIconId}}.png
+  body: none
+  auth: none
+}
+
+vars {
+  skillIndex: 0
+}
+
+script:pre-request {
+  const axios = require('axios');
+  const baseUrl = bru.getEnvVar('baseUrl');
+  const operatorId = bru.getEnvVar('operatorId');
+  const skillIndex = bru.getVar('skillIndex');
+
+  const res = await axios.get(`${baseUrl}/operator/${operatorId}`);
+  const skill = res.data.value.skills[skillIndex].excel;
+  const rawId = skill.iconId ?? skill.skillId;
+  const skillIconId = rawId.replace('[', '%5B').replace(']', '%5D');
+  bru.setVar('skillIconId', skillIconId);
+}
+
+docs {
+  Skill icon image. The filename is skill_icon_{iconId ?? skillId}.png.
+  iconId is null for most skills — the pre-request script falls back to skillId automatically.
+  [ and ] in skill IDs must be encoded as %5B and %5D (handled by the pre-request script).
+  Change skillIndex (0, 1, or 2) in the vars block to fetch a different skill's icon.
+}

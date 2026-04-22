@@ -1,0 +1,23 @@
+meta {
+  name: Get All Operators
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/operator
+  body: none
+  auth: none
+}
+
+params:query {
+  ~include: value.id,value.data.name,value.data.rarity,value.data.tagList
+  ~limit: 50
+}
+
+docs {
+  Returns all operator documents. Without filters this is a large payload (300+ operators).
+  Enable the `include` param to project only needed fields and keep the response small.
+  Enable the `limit` param to paginate. Use `sort` and `searchv2` for advanced filtering.
+  Useful for building local caches (e.g. recruitment tag lookup).
+}

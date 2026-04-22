@@ -1,0 +1,19 @@
+meta {
+  name: Get Operator
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/operator/{{operatorId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Returns the full operator document for a single operator by ID.
+  Response: { value: { id, archetype, data, skills[], talents, modules[], skins[], bases[], range, recruit, paradox } }
+  Key fields: value.data.name, value.data.rarity (TIER_1–TIER_6), value.data.profession, value.data.tagList
+  value.skins[0].avatarId → avatar image; value.skins[0].portraitId → full art (encode # as %23)
+  value.skills[i].excel.skillId / iconId → skill icon (encode [ as %5B, ] as %5D)
+}

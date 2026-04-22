@@ -1,0 +1,19 @@
+meta {
+  name: Get Range
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/range/{{rangeId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Resolves a range grid by ID. Used when skill.excel.levels[i].rangeId is not null.
+  Response: { value: { id, direction, grids: [{ row, col }] } }
+  grids is a flat list of occupied cells relative to the operator's tile (row 0, col 0).
+  Positive row = up, positive col = right.
+  Pass value directly to buildRangeString() in utils/messagesUtils.js.
+}

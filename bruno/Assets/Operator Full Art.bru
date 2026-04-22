@@ -1,0 +1,28 @@
+meta {
+  name: Operator Full Art
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{assetUrl}}/operator/arts/{{portraitId}}.png
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const axios = require('axios');
+  const baseUrl = bru.getEnvVar('baseUrl');
+  const operatorId = bru.getEnvVar('operatorId');
+
+  const res = await axios.get(`${baseUrl}/operator/${operatorId}`);
+  const portraitId = res.data.value.skins[0].portraitId.replace('#', '%23');
+  bru.setVar('portraitId', portraitId);
+}
+
+docs {
+  Full portrait art for the operator's default skin (skins[0]).
+  portraitId is fetched dynamically from value.skins[0].portraitId — not the same as operatorId.
+  The # character in some portraitIds must be encoded as %23 (handled by the pre-request script).
+  Change operatorId in the environment to test any operator.
+}

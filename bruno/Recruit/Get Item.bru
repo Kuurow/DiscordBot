@@ -1,0 +1,18 @@
+meta {
+  name: Get Item
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/item/{{itemId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Resolves an item by ID to get its display name and metadata.
+  Response: { value: { data: { name, description, rarity, itemType } } }
+  Used by utils/itemCache.js to resolve material cost arrays ([{ id, count }] → "Nx Name").
+  Item IDs appear in operator upgrade costs: data.allSkillLvlup, skills[i].levelUpCostCond, data.phases[i].evolveCost.
+}

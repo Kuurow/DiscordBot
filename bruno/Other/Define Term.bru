@@ -1,0 +1,18 @@
+meta {
+  name: Define Term
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/define/stun
+  body: none
+  auth: none
+}
+
+docs {
+  Returns the in-game definition for a term (e.g. stun, sleep, fragile).
+  Term keys match the tags used in Arknights HTML descriptions (e.g. <$ba.stun>).
+  Not yet implemented in the bot — endpoint available for future /define command.
+  Replace "stun" in the URL with any in-game status term.
+}
